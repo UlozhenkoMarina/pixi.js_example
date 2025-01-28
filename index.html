@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Click circle</title>
+    <script src = 'https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.1/pixi.min.js'></script>
+</head>
+<body>
+<script>
+    //application initialising
+    let app = new PIXI.Application({
+        width: 800,
+        height: 600,
+        backgroundColor: 0x000000,
+        antialias: true
+    })
+    document.body.appendChild(app.view);
+    //variable for storing index of choosing color in colors array
+    let index = 0;
+    //variable fot storing user's score
+    let score = 0
+    //variable for counting events of choosing the same color
+    let count = 0;
+
+    //creating and initialising circle object
+    let circle = new PIXI.Graphics();
+    circle.beginFill(0x00ff00);
+    circle.drawCircle(400, 300, 200);
+    circle.endFill();
+    app.stage.addChild(circle);
+
+    //colors array
+    let colors = [0x00ff00, 0xff0000]
+
+    //text field for showing user's score
+    const text = new PIXI.Text(`Score ${score}`, {
+        fontFamily: 'Arial',
+        fontSize: 36,
+        fill: 0xffffff,
+        align: 'center',
+    });
+    app.stage.addChild(text);
+
+    //adding interactivity to monitor and process user's click on circle
+    circle.interactive = true;
+    circle.on('click', function () {
+        //if click was on green color score increase
+        // in another situation game over
+        if(index == 0) {
+            score += 1;
+            text.text = `Score ${score}`;
+            step()
+        }else{
+            text.text = `Game over`;
+            score = -1;
+        }
+    });
+
+    //function for creating basic background for each level
+    const step = () => {
+        circle.clear()
+        prev = index;
+        index = Math.floor(Math.random() * colors.length)
+        //checking if choosing of the same color is less than two times
+        //if it is bigger, changing color on opposite
+        if(index == prev){
+            count+= 1;
+            if(count >= 2){
+                count = 0;
+                index = 1 - index;
+            }
+        }
+        //redefining circle object with new properties
+        circle.beginFill(colors[index]);
+        circle.drawCircle(400, 300, 200);
+        circle.endFill();
+        app.stage.addChild(circle);
+        //if color is red, waiting time for possible user click(and its processing if needed)
+        //recalling step function(creating new level)
+        if(index == 1){
+            setTimeout(step, 100000);
+        }
+    }
+</script>
+</body>
+</html>
